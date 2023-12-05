@@ -7,7 +7,7 @@
           <button
             @click="mobileMenu = !mobileMenu"
             type="button"
-            class="relative   inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+            class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
             aria-controls="mobile-menu"
             aria-expanded="false"
           >
@@ -60,17 +60,18 @@
           <div class="hidden sm:ml-6 sm:block">
             <div class="flex space-x-4">
               <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-              <a
-                href="#"
-                class="bg-gray-900 text-white rounded-md px-3 py-2 text-sm font-medium"
-                aria-current="page"
-                >Home</a
-              >
-              <a
-                href="#"
+              <RouterLink
+                to="/"
                 class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
-                >Page 1</a
               >
+                Home
+              </RouterLink>
+              <RouterLink
+                to="/problems"
+                class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
+              >
+                Problems
+              </RouterLink>
               <a
                 href="#"
                 class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
@@ -206,6 +207,7 @@
   </nav>
 </template>
 <script setup>
+import { RouterLink } from 'vue-router'
 import { useGeneralStore } from '../stores/counter'
 import { ref } from 'vue'
 const generalStore = useGeneralStore()
