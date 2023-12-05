@@ -1,8 +1,8 @@
-<script setup>
-</script>
-
 <template>
-  <main class="text-9xl">
-   HelloWorld
-  </main>
+  <DefaultLayout>
+    <main class="flex justify-end"></main>
+  </DefaultLayout>
 </template>
+<script setup>
+import DefaultLayout from '../layouts/DefaultLayout.vue'
+</script>
