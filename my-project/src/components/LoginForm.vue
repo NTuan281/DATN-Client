@@ -34,6 +34,7 @@
 <script setup>
 import { ref } from 'vue'
 import TextInput from './TextInput.vue'
+
 let email = ref(null)
 let password = ref(null)
 let errors = ref(null)
