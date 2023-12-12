@@ -61,6 +61,9 @@
               cols="30"
               rows="20"
               class="w-full outline-none border-t rounded-md p-2 text-slate-900"
+              v-model="code"
+              @keydown.tab.prevent="insertTab"
+              @keydown.enter.prevent="insertNewline"
             ></textarea>
           </div>
         </div>
@@ -116,5 +119,30 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ArrowUturnLeftIcon
-} from '@heroicons/vue/24/outline'
+} from '@heroicons/vue/24/outline';
+const insertTab = (event) => {
+  const { selectionStart, selectionEnd } = event.target;
+  this.code =
+    this.code.substring(0, selectionStart) +
+    "\t" +
+    this.code.substring(selectionEnd);
+
+  this.$nextTick(() => {
+    event.target.selectionStart = event.target.selectionEnd =
+      selectionStart + 1;
+  });
+};
+
+const insertNewline = (event) => {
+  const { selectionStart, selectionEnd } = event.target;
+  this.code =
+    this.code.substring(0, selectionStart) +
+    "\n\t" +
+    this.code.substring(selectionEnd);
+
+  this.$nextTick(() => {
+    event.target.selectionStart = event.target.selectionEnd =
+      selectionStart + 2;
+  });
+};
 </script>

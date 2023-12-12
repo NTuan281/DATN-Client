@@ -23,6 +23,21 @@ const router = createRouter({
       path: '/problems',
       name: 'problem',
       component: () => import('../views/ProblemsView.vue')
+    },
+    {
+      path:'/dashboard',
+      name:'dashboard',
+      component: ()=> import('../views/DashBoard.vue')
+    },
+    {
+      path:'/user',
+      name: 'UserManagement',
+      component: ()=> import('../views/UserManagement.vue')
+    },
+    {
+      path:'/problem',
+      name:'ProblemManagement',
+      component:()=> import ('../views/ProblemManagement.vue')
     }
   ]
 })

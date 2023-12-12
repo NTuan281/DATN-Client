@@ -208,7 +208,7 @@
 </template>
 <script setup>
 import { RouterLink } from 'vue-router'
-import { useGeneralStore } from '../stores/counter'
+import { useGeneralStore } from '../stores/generalStore.js'
 import { ref } from 'vue'
 const generalStore = useGeneralStore()
 const mobileMenu = ref(false)

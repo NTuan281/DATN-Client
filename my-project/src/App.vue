@@ -2,7 +2,7 @@
 import { RouterView } from 'vue-router'
 const generalStore = useGeneralStore()
 import AuthOverlay from './components/AuthOverlay.vue'
-import { useGeneralStore } from './stores/counter'
+import { useGeneralStore } from './stores/generalStore.js'
 </script>
 
 <template>

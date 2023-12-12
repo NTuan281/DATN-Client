@@ -12,7 +12,7 @@
         </button>
       </div>
       <Login v-if="isRegister" />
-      <Register v-else />
+      <Regisster v-else />
       <div class="absolute flex items-center justify-center py-5 left-0 bottom-0 border-t w-full">
         <span class="text-[14px] text-gray-600">Don't have an account?</span>
         <button @click="isRegister = !isRegister" class="text-[14px] font-semibold pl-1">
@@ -24,7 +24,7 @@
 </template>
 <script setup>
 import { XMarkIcon } from '@heroicons/vue/24/outline'
-import { useGeneralStore } from '../stores/counter'
+import { useGeneralStore } from '../stores/generalStore.js'
 import { ref } from 'vue'
 import Login from './LoginForm.vue'
 import Register from './RegisterForm.vue'

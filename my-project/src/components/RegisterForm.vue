@@ -23,7 +23,7 @@
   <div class="px-6 pb-2">
     <TextInput
       placeholder="Your user name"
-      v-model:input="fullName"
+      v-model:input="userName"
       inputType="text"
       :autoFocus="true"
       :error="errors && errors.name ? errors.name[0] : ''"
@@ -39,7 +39,7 @@
       :error="errors && errors.email ? errors.email[0] : ''"
     />
   </div>
-  <div class="px-6 pb-1.5 text-[15px]">Conform Password</div>
+  <div class="px-6 pb-1.5 text-[15px]">Confirm Password</div>
   <div class="px-6 pb-2">
     <TextInput
       placeholder="Email address"
