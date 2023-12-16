@@ -12,7 +12,7 @@
         </button>
       </div>
       <Login v-if="isRegister" />
-      <Regisster v-else />
+      <Register v-else />
       <div class="absolute flex items-center justify-center py-5 left-0 bottom-0 border-t w-full">
         <span class="text-[14px] text-gray-600">Don't have an account?</span>
         <button @click="isRegister = !isRegister" class="text-[14px] font-semibold pl-1">

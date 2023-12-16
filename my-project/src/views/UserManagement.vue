@@ -25,7 +25,7 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import AdminLayout from "../layouts/AdminLayout.vue";
-import ListUserItem from "../components/ListUserItem.vue";
+import ListUserItem from "../components/listuseritem.vue";
 import { useUserStore } from "../stores/userStore";
 const listUser = ref([]);
 const userStore = useUserStore();

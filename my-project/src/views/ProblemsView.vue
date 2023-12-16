@@ -20,7 +20,7 @@
         </button>
       </div>
       <div>
-        <button class="flex hover:bg-slate-300 px-3 py-1 rounded-md">
+        <button class="flex hover:bg-slate-300 px-3 py-1 rounded-md" @click="backToHome">
           <ArrowUturnLeftIcon class="w-6 h-6 text-gray-500" />
           <span class="font-semibold ml-2">Back to home</span>
         </button>
@@ -61,10 +61,11 @@
               cols="30"
               rows="20"
               class="w-full outline-none border-t rounded-md p-2 text-slate-900"
-              v-model="code"
-              @keydown.tab.prevent="insertTab"
-              @keydown.enter.prevent="insertNewline"
-            ></textarea>
+              v-model="textInArea"
+              @keydown.tab.prevent="handleTab"
+              @keydown.enter.prevent="handleEnter"
+              
+            >làm mà lỗi tè le</textarea>
           </div>
         </div>
         <div class="bg-slate-100 m-4 p-4 rounded-md">
@@ -120,29 +121,23 @@ import {
   ChevronRightIcon,
   ArrowUturnLeftIcon
 } from '@heroicons/vue/24/outline';
-const insertTab = (event) => {
-  const { selectionStart, selectionEnd } = event.target;
-  this.code =
-    this.code.substring(0, selectionStart) +
-    "\t" +
-    this.code.substring(selectionEnd);
-
-  this.$nextTick(() => {
-    event.target.selectionStart = event.target.selectionEnd =
-      selectionStart + 1;
-  });
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+const router = useRouter()
+const textInArea = ref('')
+const handleTab = (event) => {
+  if(event.key === "Tab"){
+    event.preventDefault()
+    textInArea.value += "    "
+  }
 };
-
-const insertNewline = (event) => {
-  const { selectionStart, selectionEnd } = event.target;
-  this.code =
-    this.code.substring(0, selectionStart) +
-    "\n\t" +
-    this.code.substring(selectionEnd);
-
-  this.$nextTick(() => {
-    event.target.selectionStart = event.target.selectionEnd =
-      selectionStart + 2;
-  });
-};
+const handleEnter = (event)=>{
+  if(event.key === "Enter"){
+    event.preventDefault();
+    textInArea.value += '\n'
+  }
+}
+const backToHome = ()=>{
+router.go(-1)
+}
 </script>

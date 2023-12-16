@@ -18,8 +18,10 @@
       inputType="password"
       
     />
+
+   
   </div>
-  <div class="px-6 text-[12px] text-gray-600">Forgot password?</div>
+   <span class="text-red-500 font-semibold text-xs flex  justify-center">{{ errorLogin }}</span>
   <div class="px-6 pb-2 mt-6">
     <button
       :disabled="!name || !password"
@@ -29,6 +31,8 @@
     >
       Login
     </button>
+    
+  <div class="px-6 text-[12px] text-gray-600 mt-10 text-center">Forgot password?</div>
   </div>
 </template>
 <script setup>
@@ -36,12 +40,20 @@ import { onMounted, ref } from 'vue'
 import TextInput from './TextInput.vue'
 import { useUserStore } from '../stores/userStore';
 import { useGeneralStore } from '../stores/generalStore';
+import { useRouter } from 'vue-router'; 
+const router =useRouter()
 const generalStore = useGeneralStore()
 const userStore = useUserStore()
+const errorLogin = ref('')
 const login = async()=>{
-  const logged = await userStore.LoginUser(name.value, password.value) 
-  if(logged){
+  try {
+    await userStore.LoginUser(name.value, password.value) 
     generalStore.isLoginFormOpen = false
+    router.push("/problems")
+  } catch (error) {
+    console.log("Error : " , error);
+    errorLogin.value = error.response.data 
+    
   }
 }
 let name = ref(null)

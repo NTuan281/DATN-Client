@@ -69,6 +69,7 @@
     </button>
   </div>
 </template>
+<!-- chay server di -->
 <script setup>
 import { ref } from 'vue';
 import axiosClient from '../api/clientAxiosApi';
@@ -79,41 +80,53 @@ const password = ref('');
 const description = ref('');
 const fullName = ref('');
 const userName = ref('');
-const errors = ref('');
+const errors = ref(''); 
 const confirmPassword = ref('');
 
 
 const register = async () => {
-  // Check if any input is empty
-  if (email.value === ''){
-    errors.email.value = 'Please fill in the field.'
-  } else if(password.value === '' ){
-    errors.password.value = 'Please fill in the field.'
-  } else if(fullName.value === '') {
-    errors.fullName.value = 'Please fill in the field.'
-  } else if(userName.value === '') {
-    errors.value = 'Please fill in the field.';
+  // Kiểm tra nếu bất kỳ trường nào trống
+  if (!email.value || !password.value || !confirmPassword.value || !fullName.value || !userName.value || !description.value) {
+    errors.value = 'Please fill in all fields.';
     return;
-  }else if(password.value !== confirmPassword.value){
-    errors.description.value = 'Confirm password does not match.';
+  }
+
+  // Kiểm tra định dạng email
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email.value)) {
+    errors.email = 'Please enter a valid email address.';
+    console.error("Please enter a valid email address.");
+    return;
+  }
+
+  // Kiểm tra mật khẩu và xác nhận mật khẩu
+  if (password.value !== confirmPassword.value) {
+    errors.confirmPassword = 'Confirm password does not match.';
+    console.error("Confirm password does not match.");
+    return;
+  }
+
+  // Kiểm tra mật khẩu có ký tự đặc biệt, số và ít nhất một chữ hoa
+  const passwordRegex = /^(?=.*[!@#$%^&*(),.?":{}|<>])(?=.*\d)(?=.*[A-Z]).{8,}$/;
+  if (!passwordRegex.test(password.value)) {
+    errors.password = 'Password must contain at least 8 characters, including one uppercase letter, one digit, and one special character.';
+    console.error("Password must contain at least 8 characters, including one uppercase letter, one digit, and one special character.");
     return;
   }
 
   try {
+    // Gọi API đăng ký
     const signUp = await axiosClient.post("auth/register",{
-    username: userName.value,
-    password: password.value,
-    fullname: fullName.value,
-    email: email.value,
-    description: description.value,
-    role: "USER",
-    createAt: new Date
-  })
+      username: userName.value,
+      password: password.value,
+      fullname: fullName.value,
+      email: email.value,
+      description: description.value,
+      role: "ADMIN",
+      createAt: new Date()
+    });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
-  
-
-  
 };
 </script>

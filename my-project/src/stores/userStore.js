@@ -10,11 +10,16 @@ export const useUserStore = defineStore("user", {
             return response.data
         },
         async LoginUser(user, password){
-          const request = await axiosClient.post("auth/login",{
+          try {
+            const request = await axiosClient.post("auth/login",{
             username: user,
             password:password
           })
           return request.data
+          } catch (error) {
+            throw error
+          }
+          
         }
   },
 });
