@@ -11,11 +11,13 @@
       </div>
       <div class="flex">
         <button class="flex hover:bg-slate-300 duration-300 px-2 py-1 rounded-md mx-2">
-          <PlayIcon class="w-6 h-6 text-gray-500 mr-2" />
+          <PlayIcon class="w-6 h-6 text-gray-500 mr-2"
+          @click="runCode()" />
           <span class="font-semibold">Run</span>
         </button>
         <button class="flex hover:bg-slate-300 duration-300 px-2 py-1 rounded-md mx-2">
-          <CloudArrowUpIcon class="w-6 h-6 text-green-500 mr-2" />
+          <CloudArrowUpIcon class="w-6 h-6 text-green-500 mr-2"
+          @click="saveSubmisson()" />
           <span class="font-semibold">Submit</span>
         </button>
       </div>
@@ -60,12 +62,12 @@
               id=""
               cols="30"
               rows="20"
-              class="w-full outline-none border-t rounded-md p-2 text-slate-900"
-              v-model="textInArea"
+              class="w-full outline-none border-t rounded-md p-2 text-slate-900 text-xl"
+              v-model="code"
               @keydown.tab.prevent="handleTab"
               @keydown.enter.prevent="handleEnter"
               
-            >làm mà lỗi tè le</textarea>
+            ></textarea>
           </div>
         </div>
         <div class="bg-slate-100 m-4 p-4 rounded-md">
@@ -95,7 +97,9 @@
           </div>
           <div class="mt-5">
             <div class="font-semibold">Result</div>
-            <textarea class="w-full border outline-none rounded-md px-2 mt-3" rows="5"></textarea>
+            <textarea id="result" class="w-full border outline-none rounded-md px-2 mt-3" rows="5"
+            v-model="result"
+            ></textarea>
           </div>
           <div class="mt-5 flex">
             <CodeBracketIcon class="w-6 h-5 text-gray-600" />
@@ -122,22 +126,76 @@ import {
   ArrowUturnLeftIcon
 } from '@heroicons/vue/24/outline';
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-const router = useRouter()
-const textInArea = ref('')
+import axiosClient from "../api/clientAxiosApi";
+const code = ref(defaultCode)
+const result = ref('')
+
+const defaultCode = "public class Solution{\n\t*\n}";
+
 const handleTab = (event) => {
   if(event.key === "Tab"){
     event.preventDefault()
-    textInArea.value += "    "
+    code.value += "    "
   }
 };
-const handleEnter = (event)=>{
-  if(event.key === "Enter"){
+const handleEnter = (event) => {
+  if (event.key === "Enter") {
     event.preventDefault();
-    textInArea.value += '\n'
+
+    const currentPosition = event.target.selectionStart;
+    const lineStart = event.target.value.lastIndexOf('\n', currentPosition - 1);
+    const currentLine = event.target.value.substring(lineStart + 1, currentPosition);
+
+    // Kiểm tra xem dòng hiện tại có kí tự "{" ở cuối không
+    const shouldIndent = /\{\s*$/.test(currentLine);
+
+    // Đếm số lượng khoảng trắng đầu tiên trên dòng hiện tại
+    const indentMatch = currentLine.match(/^\s*/);
+    const indent = indentMatch ? indentMatch[0] : "";
+
+    // Bỏ qua những ký tự sau con trỏ và chỉ giữ lại dòng đầu tiên
+    const newText = event.target.value.substring(0, currentPosition) + '\n' + (shouldIndent ? '\t' : '') + indent + event.target.value.substring(currentPosition);
+
+    event.target.value = newText;
+
+    // Tính vị trí mới cho con trỏ
+    const newPosition = currentPosition + 1 + (shouldIndent ? 1 : 0) + indent.length;
+    event.target.setSelectionRange(newPosition, newPosition);
   }
-}
-const backToHome = ()=>{
-router.go(-1)
+};
+
+const runCode = async () => {
+  
+  const data ={
+      code: code.value.trim(),
+      parameters: [[4,6,1,2]],
+      output: "6",  
+      functionName: "findMaxValue"
+    }
+    try {
+    // Gọi API đăng ký
+    const run = await axiosClient.post("executes", data, {
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json, text/plsain, */*'
+  }});
+    // Truy cập các thành phần từ response
+    const responseString = run.data.responseString;
+    const responseResult = run.data.responseResult;
+
+    const resultTab = document.getElementById("result");
+
+    // Sử dụng responseString và responseResult theo nhu cầu của bạn
+    if (responseResult) {
+      resultTab.style.color = 'green';  // Màu xanh cho kết quả đúng
+    } else {
+      resultTab.style.color = 'red';  // Màu đỏ cho kết quả sai
+    }
+
+    // Gán giá trị cho result.value (ví dụ: gán giá trị của responseString)
+    result.value = responseString;
+  } catch (error) {
+    console.error(error);
+  }
 }
 </script>

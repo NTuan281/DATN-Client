@@ -25,12 +25,13 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import AdminLayout from "../layouts/AdminLayout.vue";
-import ListUserItem from "../components/listuseritem.vue";
+import ListUserItem from "../components/ListUserItem.vue";
 import { useUserStore } from "../stores/userStore";
 const listUser = ref([]);
 const userStore = useUserStore();
 onMounted( async  () => {
   listUser.value = await  userStore.getAllUser()
+  console.log(listUser.value);
 });
 
 </script>

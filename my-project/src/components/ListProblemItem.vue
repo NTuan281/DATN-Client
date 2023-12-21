@@ -1,9 +1,10 @@
 <template>
     <div class="col-span-2">{{ problem.name }}</div>
-  
+    <div class="col-span-2">{{ problem.difficulty }}</div>
+    <div class="col-span-2">{{ problem.createAt.toLocaleDateString() }}</div>
+    <div class="col-span-2">{{ problem.user.name }}</div>
+
     <div class="flex col-span-1 justify-between">
-      
-      
     </div>
    
   </template>

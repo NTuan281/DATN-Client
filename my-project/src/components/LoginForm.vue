@@ -49,13 +49,46 @@ const login = async()=>{
   try {
     await userStore.LoginUser(name.value, password.value) 
     generalStore.isLoginFormOpen = false
-    router.push("/problems")
+    // const token = getToken();
+    // const userRole = decodeTokenAndGetUserRole(token);
+    // if (userRole === 'ADMIN') {
+    //   router.push("/dashboard")
+    // } else if (userRole === 'USER') {
+    //   router.push("/problems")
+    // } else {
+    //   router.push("/dashboard")
+    // }
+    
   } catch (error) {
     console.log("Error : " , error);
     errorLogin.value = error.response.data 
     
   }
 }
+// const jwt = require('jsonwebtoken');
+
+function decodeTokenAndGetUserRole(token) {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1])); // Decode the payload
+      return payload.role; // Assuming the role is stored in the 'role' claim
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return null;
+    }
+  }
+
+function getToken() {
+    const cookies = document.cookie.split(';');
+    for (const cookie of cookies) {
+      const [name, value] = cookie.trim().split('=');
+      if (name === 'token') { 
+        return value;
+      }
+    }
+    return null;
+  }
+  
+
 let name = ref(null)
 let password = ref(null)
 </script>

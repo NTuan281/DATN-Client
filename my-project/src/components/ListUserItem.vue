@@ -1,6 +1,9 @@
 <template>
+  <div class="col-span-2">{{ user.fullName }}</div>
   <div class="col-span-2">{{ user.userName }}</div>
   <div class="col-span-2">{{ user.email }}</div>
+  <div class="col-span-2">{{ user.description }}</div>
+  <div class="col-span-2">{{ user.createAt}}</div>
 
   <div class="flex col-span-1 justify-between">
     <div
@@ -9,7 +12,7 @@
     >
       {{ user.role }}
     </div>
-    <div v-show="user.isBlocked">
+    <div v-show="user.isActive">
       <LockClosedIcon class="w-6 h-6 text-gray-600" />
     </div>
   </div>
