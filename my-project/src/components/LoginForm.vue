@@ -45,49 +45,52 @@ const router =useRouter()
 const generalStore = useGeneralStore()
 const userStore = useUserStore()
 const errorLogin = ref('')
+
 const login = async()=>{
-  try {
-    await userStore.LoginUser(name.value, password.value) 
-    generalStore.isLoginFormOpen = false
-    // const token = getToken();
-    // const userRole = decodeTokenAndGetUserRole(token);
-    // if (userRole === 'ADMIN') {
-    //   router.push("/dashboard")
-    // } else if (userRole === 'USER') {
-    //   router.push("/problems")
-    // } else {
-    //   router.push("/dashboard")
-    // }
-    
-  } catch (error) {
-    console.log("Error : " , error);
-    errorLogin.value = error.response.data 
-    
-  }
+try {
+    const token = await userStore.LoginUser(name.value, password.value);
+    generalStore.isLoginFormOpen = false;
+    const role = decodeTokenAndGetUserRole(token)
+    if(role === "ADMIN")
+      router.push('dashboard')
+    else
+      router.push('problems')
+} catch (error) {
+    errorLogin.value = error.response ? error.response.data : 'Đã xảy ra lỗi';
+}
+
 }
 // const jwt = require('jsonwebtoken');
 
 function decodeTokenAndGetUserRole(token) {
     try {
-      const payload = JSON.parse(atob(token.split('.')[1])); // Decode the payload
-      return payload.role; // Assuming the role is stored in the 'role' claim
-    } catch (error) {
-      console.error('Error decoding token:', error);
-      return null;
-    }
-  }
+        if (token) {
+            const [, payloadBase64] = token.split('.');
+            const decodedPayload = JSON.parse(atob(payloadBase64));
 
-function getToken() {
-    const cookies = document.cookie.split(';');
-    for (const cookie of cookies) {
-      const [name, value] = cookie.trim().split('=');
-      if (name === 'token') { 
-        return value;
-      }
+            // Đảm bảo rằng 'role' là một trường có trong payload trước khi truy cập
+            if (decodedPayload && decodedPayload.role) {
+                return decodedPayload.role;
+            } else {
+                console.error('Trường "role" không tồn tại trong payload.');
+                return null;
+            }
+        } else {
+            console.error('Token là null hoặc undefined.');
+            return null;
+        }
+    } catch (error) {
+        console.error('Lỗi khi giải mã token:', error);
+        return null;
     }
-    return null;
-  }
-  
+}
+
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
 
 let name = ref(null)
 let password = ref(null)

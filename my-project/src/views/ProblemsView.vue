@@ -130,7 +130,7 @@ import axiosClient from "../api/clientAxiosApi";
 const code = ref(defaultCode)
 const result = ref('')
 
-const defaultCode = "public class Solution{\n\t*\n}";
+const defaultCode = "public class Solutions{\n\t*\n}";
 
 const handleTab = (event) => {
   if(event.key === "Tab"){
@@ -168,9 +168,12 @@ const runCode = async () => {
   
   const data ={
       code: code.value.trim(),
-      parameters: [[4,6,1,2]],
-      output: "6",  
-      functionName: "findMaxValue"
+      // parameters: [[4,6,1,2]],
+      // output: "6",  
+      // functionName: "findMaxValue"
+      parameters: [],
+      output: "Hello world",
+      functionName: "hello"
     }
     try {
     // Gọi API đăng ký

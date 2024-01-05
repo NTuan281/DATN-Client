@@ -6,26 +6,16 @@
     <div class="relative bg-white w-full max-w-[470px] h-[70%] p4 rounded-lg">
       <div class="w-full flex justify-end">
         <button class="p-1.5 rounded-full bg-gray-100">
-          <XMarkIcon class="w-7 h-7" @click="generalStore.isAdminLoginOpen = false" />
+          <XMarkIcon class="w-7 h-7" @click="generalStore.isCreatedAminOpen = false" />
         </button>
       </div>
-      <Login v-if="!adminToken" />
+      <RegisterForm />
     </div>
   </div>
 </template>
 <script setup>
 import { XMarkIcon } from "@heroicons/vue/24/solid";
-import { onMounted, ref } from "vue";
-import Login from "./LoginAdmin.vue";
 import { useGeneralStore } from "../stores/generalStore";
-import jsCookie from "js-cookie";
-
-const generalStore = useGeneralStore();
-let isRegister = ref(true);
-const adminToken = jsCookie.get("admin");
-onMounted(() => {
-  if (adminToken) {
-    isRegister.value = false;
-  }
-});
+import RegisterForm from "./RegisterForm.vue";
+const generalStore = useGeneralStore()
 </script>

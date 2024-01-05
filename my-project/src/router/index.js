@@ -34,10 +34,15 @@ const router = createRouter({
       name: 'UserManagement',
       component: ()=> import('../views/UserManagement.vue')
     },
+    
     {
-      path:'/problem',
-      name:'ProblemManagement',
-      component:()=> import ('../views/ProblemManagement.vue')
+      path:"/addproblem",
+      name:"AddProblem",
+      component:()=>import('../views/CreateProblem.vue')
+    },{
+      path:"/problem-management",
+      name:"ProblemManagement",
+      component:()=>import('../views/ProblemManagement.vue')
     }
   ]
 })

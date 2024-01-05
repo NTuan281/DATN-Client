@@ -19,6 +19,17 @@ export const useUserStore = defineStore("user", {
           } catch (error) {
             throw error
           }
+        },
+        async RegiserUser(user, password){
+          try {
+            const request = await axiosClient.post("auth/login",{
+            username: user,
+            password:password
+          })
+          return request.data
+          } catch (error) {
+            throw error
+          }
           
         }
   },

@@ -6,8 +6,14 @@ export const useProblemStore = defineStore("problem", {
 
   actions: {
         async getAllProblem(){
-            const response  = await axiosClient.get("problem")
+          try {
+             const response  = await axiosClient.get("problem")
+             
             return response.data
+          } catch (error) {
+            console.log(error);
+          }
+           
         },
         async execute(code, parameters, output, functionName){
           const data ={
