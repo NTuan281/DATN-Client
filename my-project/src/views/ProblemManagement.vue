@@ -33,8 +33,6 @@ onMounted(async()=>{
       listProblem.value = await problemStore.getAllProblem()
     } catch (error) {
       console.log(error);
-    }
-    
-    
+    }  
 })
 </script>

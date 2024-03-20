@@ -41,16 +41,42 @@ import TextInput from './TextInput.vue'
 import { useUserStore } from '../stores/userStore';
 import { useGeneralStore } from '../stores/generalStore';
 import { useRouter } from 'vue-router'; 
+import VueCookies from 'vue-cookies';
+
 const router =useRouter()
 const generalStore = useGeneralStore()
 const userStore = useUserStore()
 const errorLogin = ref('')
 
+
+import axios from 'axios';
+
+// Tạo một instance Axios với interceptors
+const axiosInstance = axios.create();
+
+// Thêm interceptor để tự động thêm token vào header "Authorization"
+axiosInstance.interceptors.request.use(
+  config => {
+    const token = VueCookies.get('authToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  error => {
+    return Promise.reject(error);
+  }
+);
+
+
+
 const login = async()=>{
 try {
     const token = await userStore.LoginUser(name.value, password.value);
     generalStore.isLoginFormOpen = false;
+    VueCookies.set('authToken', token, '1h'); // '1h' là thời gian sống của cookie (1 giờ)
     const role = decodeTokenAndGetUserRole(token)
+    console.log(role);
     if(role === "ADMIN")
       router.push('dashboard')
     else

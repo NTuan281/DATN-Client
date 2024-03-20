@@ -42,7 +42,7 @@
   <div class="px-6 pb-1.5 text-[15px]">Confirm Password</div>
   <div class="px-6 pb-2">
     <TextInput
-      placeholder="Email address"
+      placeholder="Confirm Password"
       v-model:input="confirmPassword"
       inputType="password"
       :autoFocus="true"
@@ -50,14 +50,14 @@
     />
   </div>
   <div class="px-6 pb-1.5 text-[15px]">Description</div>
-  <div class="px-6 pb-2">
+  <div class="px-6 pb-2 mb-1">
     <TextInput
       placeholder="Your description"
       v-model:input="description" 
       inputType="text"
     />
   </div>
-
+  <span class="text-red-500 font-semibold text-xs flex  justify-center">{{ errorRegister }}</span>
   <div class="px-6 pb-2 mt-6">
     <button
       :disabled="!userName || !password || !confirmPassword || !fullName || !email || !description"
@@ -82,12 +82,14 @@ const fullName = ref('');
 const userName = ref('');
 const errors = ref(''); 
 const confirmPassword = ref('');
+const errorRegister = ref('')
 
 
 const register = async () => {
   // Kiểm tra nếu bất kỳ trường nào trống
   if (!email.value || !password.value || !confirmPassword.value || !fullName.value || !userName.value || !description.value) {
     errors.value = 'Please fill in all fields.';
+    errorRegister.value = 'Please fill in all fields.'
     return;
   }
 
@@ -96,6 +98,7 @@ const register = async () => {
   if (!emailRegex.test(email.value)) {
     errors.email = 'Please enter a valid email address.';
     console.error("Please enter a valid email address.");
+    errorRegister.value = 'Please enter a valid email address.';
     return;
   }
 
@@ -103,6 +106,7 @@ const register = async () => {
   if (password.value !== confirmPassword.value) {
     errors.confirmPassword = 'Confirm password does not match.';
     console.error("Confirm password does not match.");
+    errorRegister.value = 'Confirm password does not match.';
     return;
   }
 
@@ -111,6 +115,7 @@ const register = async () => {
   if (!passwordRegex.test(password.value)) {
     errors.password = 'Password must contain at least 8 characters, including one uppercase letter, one digit, and one special character.';
     console.error("Password must contain at least 8 characters, including one uppercase letter, one digit, and one special character.");
+    errorRegister.value = 'Password must contain at least 8 characters, including one uppercase letter, one digit, and one special character.';
     return;
   }
 
@@ -122,9 +127,11 @@ const register = async () => {
       fullname: fullName.value,
       email: email.value,
       description: description.value,
-      role: "ADMIN",
+      role: "USER",
       createAt: new Date()
     });
+    errorRegister.value = 'Successfully!!';
+
   } catch (error) {
     console.error(error);
   }
