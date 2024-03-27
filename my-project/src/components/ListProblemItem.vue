@@ -3,7 +3,6 @@
       <div class="col-span-2">{{ problem.name }}</div>
       <div class="col-span-2">{{ problem.difficulty }}</div>
       <div class="col-span-2">{{ formatDate(problem.createAt) }}</div>
-      <div class="col-span-2">{{ problem.user.fullName }}</div>
 
     <!-- Hiển thị nút testcase -->
       <div class="col-span-2">

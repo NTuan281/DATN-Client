@@ -187,15 +187,15 @@ onMounted(() => {
 
 const submitForm = async () => {
   let user;
-  const token = getCookie('authToken')
-  const id = decodeTokenAndGetUserId(token);
-  try {
-    user = await axiosInstance.get('users/'+id);
-  } catch (error) {
-    console.error("Error get user:", error);
-  }
-  console.log(selectedTagName.value);
-
+  // const token = getCookie('authToken')
+  // const id = decodeTokenAndGetUserId(token);
+  // try {
+  //   user = await axiosInstance.get('users/'+id);
+  // } catch (error) {
+  //   console.error("Error get user:", error);
+  // }
+  // console.log(selectedTagName.value);
+  // console.log(user.data)
 
   if (!tag.value) {
     console.error('No tag selected.');
@@ -208,13 +208,14 @@ const submitForm = async () => {
     guide: guide.value,
     description: description.value,
     content: quill.root.innerHTML,
-    user: user.data
+    // user: user.data
   };
 
   console.log(problemData);
   try {
-    const response = await axiosClient.post('problem', problemData)
+  //  const response = await axiosClient.post('problem', problemData)
     // Xử lý response nếu cần
+    console.log(problemData);
   } catch (error) {
     console.error('Error submitting form:', error)
   }
