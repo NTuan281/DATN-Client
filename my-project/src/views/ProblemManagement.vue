@@ -26,11 +26,14 @@ import { onMounted, ref } from 'vue';
 import ListProblemItem from '../components/ListProblemItem.vue'
 import AdminLayout from '../layouts/AdminLayout.vue';
 import {useProblemStore} from '../stores/problemStore.js'
+import Cookies from 'js-cookie'
+
 const problemStore = useProblemStore()
 const listProblem = ref([])
+const token = Cookies.get('authToken')
 onMounted(async()=>{
     try {
-      listProblem.value = await problemStore.getAllProblem()
+      listProblem.value = await problemStore.getAllProblem(token)
     } catch (error) {
       console.log(error);
     }  

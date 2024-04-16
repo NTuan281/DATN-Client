@@ -55,7 +55,7 @@ const router = createRouter({
     {
       path: '/register',
       name: 'register',
-      component: () => import('../views/RegisterView.vue')
+      component: () => import('../components/RegisterForm.vue')
     },
     {
       path: '/problems',
@@ -67,12 +67,11 @@ const router = createRouter({
       name: 'dashboard',
       component: Dashboard,
       beforeEnter: (to, from, next) => {
-        // Kiểm tra đăng nhập trước khi vào trang dashboard
-        const userRole = roleToken(); // Lấy vai trò của người dùng
+        const userRole = roleToken();
         if (userRole === 'ADMIN') {
-          next() // Nếu người dùng có vai trò là admin, cho phép truy cập vào trang dashboard
+          next() 
         } else {
-          next('/') // Nếu không phải admin, chuyển hướng đến trang đăng nhập
+          next('/') 
         }
       }
     },

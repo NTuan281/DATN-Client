@@ -27,10 +27,12 @@ import { onMounted, ref } from "vue";
 import AdminLayout from "../layouts/AdminLayout.vue";
 import ListUserItem from "../components/ListUserItem.vue";
 import { useUserStore } from "../stores/userStore";
+import Cookies from 'js-cookie'
 const listUser = ref([]);
 const userStore = useUserStore();
 onMounted( async  () => {
-  listUser.value = await  userStore.getAllUser()
+  const token = Cookies.get('authToken')
+  listUser.value = await  userStore.getAllUser(token)
   console.log(listUser.value);
 });
 

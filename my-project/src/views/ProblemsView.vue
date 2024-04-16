@@ -127,6 +127,7 @@ import {
 } from '@heroicons/vue/24/outline';
 import { ref } from 'vue';
 import axiosClient from "../api/clientAxiosApi";
+import Cookies from 'js-cookie'
 const code = ref(defaultCode)
 const result = ref('')
 
@@ -163,7 +164,6 @@ const handleEnter = (event) => {
     event.target.setSelectionRange(newPosition, newPosition);
   }
 };
-
 const runCode = async () => {
   
   const data ={
@@ -175,12 +175,14 @@ const runCode = async () => {
       output: "Hello world",
       functionName: "hello"
     }
+    const token = Cookies.get('authToken')
     try {
     // Gọi API đăng ký
     const run = await axiosClient.post("executes", data, {
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json, text/plsain, */*'
+    'Accept': 'application/json, text/plain, */*',
+    'Authorization': `Bearer ${token}`
   }});
     // Truy cập các thành phần từ response
     const responseString = run.data.responseString;

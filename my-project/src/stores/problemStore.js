@@ -5,10 +5,14 @@ export const useProblemStore = defineStore("problem", {
   }),
 
   actions: {
-        async getAllProblem(){
+        async getAllProblem(token){
           try {
-             const response  = await axiosClient.get("problem")
-             
+             const response  = await axiosClient.get("problem",{
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            'Accept': 'application/json, text/plsain, */*'
+              }})
             return response.data
           } catch (error) {
             console.log(error);

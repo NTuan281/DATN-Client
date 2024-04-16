@@ -84,8 +84,10 @@ import axiosClient from '../api/clientAxiosApi'
 import AdminLayout from '../layouts/AdminLayout.vue'
 import Quill from "quill";
 import "quill/dist/quill.snow.css"; // Import Quill's Snow theme CSS
+import { useUserStore } from '../stores/userStore';
+import Cookies from 'js-cookie'
 
-
+const userStore = useUserStore();
 const description = ref('')
 const guide = ref('')
 const tag = ref('')
@@ -135,8 +137,12 @@ const logContent = () => {
   }
 }
 const fetchTagOptions = async () => {
+  const token = Cookies.get('authToken')
   try {
-    const response = await axiosClient.get('tags') // Replace YOUR_API_ENDPOINT with your actual API endpoint
+    const response = await axiosClient.get('tags',{
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }}) // Replace YOUR_API_ENDPOINT with your actual API endpoint
     tagOptions.value = response.data
   } catch (error) {
     console.error('Error fetching tag options:', error)
@@ -158,7 +164,10 @@ const resetTag = () => {
 
 const addNewTag = async () => {
   try {
-    const response = await axiosClient.post('tags', newTagName.value)
+    const response = await axiosClient.post('tags', newTagName.value,{
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }})
     hideAddTagDialog()
   } catch (error) {
     console.error('Error adding new tag:', error)
@@ -202,16 +211,21 @@ const submitForm = async () => {
     return;
   }
 
+  const token = Cookies.get('authToken')
+  const id = decodeTokenAndGetUserId(token)
+  console.log(id, token);
+  user = await userStore.getUserById(id, token)
+
   const problemData = {
     name: problem.value,
     difficulty: difficulty.value,
     guide: guide.value,
     description: description.value,
     content: quill.root.innerHTML,
-    // user: user.data
+    user: user
   };
 
-  console.log(problemData);
+  console.log(problemData+'\n'+ user);
   try {
   //  const response = await axiosClient.post('problem', problemData)
     // Xử lý response nếu cần
@@ -237,7 +251,7 @@ function decodeTokenAndGetUserId(token) {
             if (decodedPayload && decodedPayload.role) {
                 return decodedPayload.id;
             } else {
-                console.error('Trường "role" không tồn tại trong payload.');
+                console.error('Trường "id" không tồn tại trong payload.');
                 return null;
             }
         } else {

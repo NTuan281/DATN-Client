@@ -127,7 +127,7 @@ const register = async () => {
       fullname: fullName.value,
       email: email.value,
       description: description.value,
-      role: "ADMIN"
+      role: "USER"
     });
     errorRegister.value = 'Successfully!!';
 
