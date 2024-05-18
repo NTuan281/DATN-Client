@@ -1,25 +1,26 @@
 <template>
   <div class="bg-slate-200">
     <div class="flex px-4 py-2 items-center justify-between">
-      <div class="flex">
-        <!-- logo here -->
-        <!-- <img src="" alt=""> -->
-        <TableCellsIcon class="h-6 w-6 text-gray-500" />
-        <span class="font-semibold ml-2">Pronlem List</span>
-        <ChevronLeftIcon class="w-6 h-6 text-gray-500 ml-2" />
-        <ChevronRightIcon class="w-6 h-6 text-gray-500 ml-2" />
-      </div>
-      <div class="flex">
-        <button class="flex hover:bg-slate-300 duration-300 px-2 py-1 rounded-md mx-2">
-          <PlayIcon class="w-6 h-6 text-gray-500 mr-2"
-          @click="runCode()" />
-          <span class="font-semibold">Run</span>
-        </button>
-        <button class="flex hover:bg-slate-300 duration-300 px-2 py-1 rounded-md mx-2">
-          <CloudArrowUpIcon class="w-6 h-6 text-green-500 mr-2"
-          @click="saveSubmisson()" />
-          <span class="font-semibold">Submit</span>
-        </button>
+      <div class="flex items-center">
+        <!-- SVG and Problem List Header -->
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6 text-gray-500"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M13 10a1 1 0 011 1v7a1 1 0 11-2 0v-7a1 1 0 011-1zM6 7a1 1 0 011 1v10a1 1 0 11-2 0V8a1 1 0 011-1z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        <span class="font-semibold ml-2 cursor-pointer" @click="showProblemList = true"
+          >Problem List</span
+        >
+        <!-- Buttons for navigating problems -->
+        <button @click="prevProblem" class="w-8 h-8 text-gray-500 ml-2">&lt;</button>
+        <button @click="nextProblem" class="w-8 h-8 text-gray-500 ml-2">&gt;</button>
       </div>
       <div>
         <button class="flex hover:bg-slate-300 px-3 py-1 rounded-md" @click="backToHome">
@@ -29,45 +30,52 @@
       </div>
     </div>
     <div class="grid grid-cols-10 w-full h-screen">
-      <div class="col-span-5 bg-slate-100 m-4 p-4 rounded-md">
-        <div class="flex">
-          <button class="flex px-2 mx-2 border-r-2">
-            <ClipboardDocumentListIcon class="h-6 w-6 text-blue-500" />
-            <span class="text-sm active:font-semibold">Description</span>
-          </button>
-          <button class="flex px-2 mx-2 border-r-2">
-            <BookOpenIcon class="h-6 w-6 text-yellow-500" />
-            <span class="text-sm font-thin active:font-semibold">Editional</span>
-          </button>
-          <button class="flex px-2 mx-2 border-r-2">
-            <BeakerIcon class="h-6 w-6 text-blue-500" />
-            <span class="text-sm font-thin active:font-semibold">Solutions</span>
-          </button>
-          <button class="flex px-2 mx-2 border-r-2">
-            <CloudArrowUpIcon class="h-6 w-6 text-blue-500" />
-            <span class="text-sm font-thin active:font-semibold">Submitions</span>
-          </button>
+      <div id="problemContent" class="col-span-5 bg-slate-100 m-4 p-4 rounded-md">
+        <!-- Problem Content -->
+        <div v-if="selectedProblem">
+          <h1 class="font-semibold text-3xl pb-4">
+            {{ selectedProblem.id + '. ' + selectedProblem.name }}
+          </h1>
+          <p :class="difficultyClass(selectedProblem.difficulty)">
+            {{ selectedProblem.difficulty }}
+          </p>
+          <p class="text-lg pt-4">{{ selectedProblem.description }}</p>
+        </div>
+        <div v-else>
+          <p>Select a problem to view its details.</p>
         </div>
       </div>
       <div class="col-span-5">
+        <!-- Code Editor and Test Case Section -->
         <div class="bg-slate-100 m-4 p-4 rounded-md">
           <div class="flex">
             <CodeBracketIcon class="h-6 w-6 text-green-500" />
             <span class="font-semibold ml-2">Code</span>
           </div>
-          <!-- area code -->
-          <div>
-            <textarea
-              name="code"
-              id=""
-              cols="30"
-              rows="20"
-              class="w-full outline-none border-t rounded-md p-2 text-slate-900 text-xl"
-              v-model="code"
-              @keydown.tab.prevent="handleTab"
-              @keydown.enter.prevent="handleEnter"
-              
-            ></textarea>
+          <textarea
+            name="code"
+            cols="30"
+            rows="20"
+            class="w-full outline-none border-t rounded-md p-2 text-slate-900 text-lg"
+            v-model="code"
+            @keydown.tab.prevent="handleTab"
+            @keydown.enter.prevent="handleEnter"
+          ></textarea>
+          <div class="flex justify-end">
+            <button
+              class="flex hover:bg-slate-300 duration-300 px-2 py-1 rounded-md mx-2"
+              @click="runCode"
+            >
+              <PlayIcon class="w-6 h-6 text-gray-500 mr-2" />
+              <span class="font-semibold">Run</span>
+            </button>
+            <button
+              class="flex hover:bg-slate-300 duration-300 px-2 py-1 rounded-md mx-2"
+              @click="saveSubmission"
+            >
+              <CloudArrowUpIcon class="w-6 h-6 text-green-500 mr-2" />
+              <span class="font-semibold">Submit</span>
+            </button>
           </div>
         </div>
         <div class="bg-slate-100 m-4 p-4 rounded-md">
@@ -97,8 +105,11 @@
           </div>
           <div class="mt-5">
             <div class="font-semibold">Result</div>
-            <textarea id="result" class="w-full border outline-none rounded-md px-2 mt-3" rows="5"
-            v-model="result"
+            <textarea
+              id="result"
+              class="w-full border outline-none rounded-md px-2 mt-3"
+              rows="5"
+              v-model="result"
             ></textarea>
           </div>
           <div class="mt-5 flex">
@@ -108,99 +119,167 @@
         </div>
       </div>
     </div>
+    <!-- Problem List Modal -->
+    <div
+      v-if="showProblemList"
+      class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-start items-center"
+    >
+      <div class="bg-white p-4 rounded-md w-2/5 h-full">
+        <ProblemList
+          :problems="problems"
+          @problem-selected="selectProblem"
+          @close-form="showProblemList = false"
+        />
+      </div>
+    </div>
   </div>
 </template>
-<script setup>
-import {
-  CodeBracketIcon,
-  PlayIcon,
-  CheckIcon,
-  PlusSmallIcon,
-  ClipboardDocumentListIcon,
-  BookOpenIcon,
-  BeakerIcon,
-  CloudArrowUpIcon,
-  TableCellsIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ArrowUturnLeftIcon
-} from '@heroicons/vue/24/outline';
-import { ref } from 'vue';
-import axiosClient from "../api/clientAxiosApi";
-import Cookies from 'js-cookie'
-const code = ref(defaultCode)
-const result = ref('')
 
-const defaultCode = "public class Solutions{\n\t*\n}";
+<script setup>
+import { ref, onMounted } from 'vue'
+import {
+  PlayIcon,
+  CloudArrowUpIcon,
+  ArrowUturnLeftIcon,
+  CodeBracketIcon,
+  CheckIcon,
+  PlusSmallIcon
+} from '@heroicons/vue/24/outline'
+import axiosClient from '../api/clientAxiosApi'
+import Cookies from 'js-cookie'
+import { useProblemStore } from '../stores/problemStore'
+import ProblemList from '../components/ProblemList.vue'
+
+const problems = ref([])
+
+const selectedProblem = ref(null)
+const code = ref('public class Solutions{\n\t*\n}')
+const result = ref('')
+const showProblemList = ref(false)
+
+const problemStore = useProblemStore()
+
+const fetchProblemOptions = async () => {
+  problems.value = await problemStore.getAllProblem()
+}
 
 const handleTab = (event) => {
-  if(event.key === "Tab"){
-    event.preventDefault()
-    code.value += "    "
-  }
-};
+  const currentPosition = event.target.selectionStart
+  event.target.value = `${event.target.value.substring(
+    0,
+    currentPosition
+  )}\t${event.target.value.substring(currentPosition)}`
+  event.target.selectionStart = event.target.selectionEnd = currentPosition + 1
+  code.value = event.target.value
+}
+
 const handleEnter = (event) => {
-  if (event.key === "Enter") {
-    event.preventDefault();
-
-    const currentPosition = event.target.selectionStart;
-    const lineStart = event.target.value.lastIndexOf('\n', currentPosition - 1);
-    const currentLine = event.target.value.substring(lineStart + 1, currentPosition);
-
-    // Kiểm tra xem dòng hiện tại có kí tự "{" ở cuối không
-    const shouldIndent = /\{\s*$/.test(currentLine);
-
-    // Đếm số lượng khoảng trắng đầu tiên trên dòng hiện tại
-    const indentMatch = currentLine.match(/^\s*/);
-    const indent = indentMatch ? indentMatch[0] : "";
-
-    // Bỏ qua những ký tự sau con trỏ và chỉ giữ lại dòng đầu tiên
-    const newText = event.target.value.substring(0, currentPosition) + '\n' + (shouldIndent ? '\t' : '') + indent + event.target.value.substring(currentPosition);
-
-    event.target.value = newText;
-
-    // Tính vị trí mới cho con trỏ
-    const newPosition = currentPosition + 1 + (shouldIndent ? 1 : 0) + indent.length;
-    event.target.setSelectionRange(newPosition, newPosition);
+  if (event.key === 'Enter') {
+    event.preventDefault()
+    const currentPosition = event.target.selectionStart
+    const lineStart = event.target.value.lastIndexOf('\n', currentPosition - 1)
+    const currentLine = event.target.value.substring(lineStart + 1, currentPosition)
+    const shouldIndent = /\{\s*$/.test(currentLine)
+    const indentMatch = currentLine.match(/^\s*/)
+    const indent = indentMatch ? indentMatch[0] : ''
+    const newText = `${event.target.value.substring(0, currentPosition)}\n${
+      shouldIndent ? '\t' : ''
+    }${indent}${event.target.value.substring(currentPosition)}`
+    event.target.value = newText
+    event.target.selectionStart = event.target.selectionEnd =
+      currentPosition + 1 + (shouldIndent ? 1 : 0) + indent.length
+    code.value = event.target.value
   }
-};
+}
+
 const runCode = async () => {
-  
-  const data ={
-      code: code.value.trim(),
-      // parameters: [[4,6,1,2]],
-      // output: "6",  
-      // functionName: "findMaxValue"
-      parameters: [],
-      output: "Hello world",
-      functionName: "hello"
-    }
-    const token = Cookies.get('authToken')
-    try {
-    // Gọi API đăng ký
-    const run = await axiosClient.post("executes", data, {
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json, text/plain, */*',
-    'Authorization': `Bearer ${token}`
-  }});
-    // Truy cập các thành phần từ response
-    const responseString = run.data.responseString;
-    const responseResult = run.data.responseResult;
+  const data = {
+    code: code.value.trim(),
+    parameters: [],
+    output: 'Hello world',
+    functionName: 'hello'
+  }
+  const token = Cookies.get('authToken')
+  try {
+    const run = await axiosClient.post('executes', data, {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json, text/plain, */*',
+        Authorization: `Bearer ${token}`
+      }
+    })
+    const responseString = run.data.responseString
+    const responseResult = run.data.responseResult
+    const resultTab = document.getElementById('result')
 
-    const resultTab = document.getElementById("result");
-
-    // Sử dụng responseString và responseResult theo nhu cầu của bạn
-    if (responseResult) {
-      resultTab.style.color = 'green';  // Màu xanh cho kết quả đúng
-    } else {
-      resultTab.style.color = 'red';  // Màu đỏ cho kết quả sai
-    }
-
-    // Gán giá trị cho result.value (ví dụ: gán giá trị của responseString)
-    result.value = responseString;
+    resultTab.style.color = responseResult ? 'green' : 'red'
+    result.value = responseString
   } catch (error) {
-    console.error(error);
+    console.error(error)
+  }
+}
+
+const prevProblem = () => {
+  const currentIndex = problems.value.findIndex(
+    (problem) => problem.id === selectedProblem.value.id
+  )
+  if (currentIndex > 0) {
+    selectedProblem.value = problems.value[currentIndex - 1]
+  }
+}
+
+const nextProblem = () => {
+  const currentIndex = problems.value.findIndex(
+    (problem) => problem.id === selectedProblem.value.id
+  )
+  if (currentIndex < problems.value.length - 1) {
+    selectedProblem.value = problems.value[currentIndex + 1]
+  }
+}
+
+const saveSubmission = () => {
+  // Logic for saving the submission
+}
+
+const backToHome = () => {
+  // Logic for navigating back to home
+}
+
+const selectProblem = (problem) => {
+  selectedProblem.value = problem
+  code.value = code.value.replace('*', 'public static ' + problem.guide + '{\n\t}')
+  showProblemList.value = false
+}
+
+onMounted(() => {
+  fetchProblemOptions()
+})
+
+const props = defineProps({
+  selectedProblem: Object
+})
+
+const difficultyClass = (difficulty) => {
+  switch (difficulty.toLowerCase()) {
+    case 'dễ':
+      return 'difficulty-easy'
+    case 'normal':
+      return 'difficulty-medium'
+    case 'bình thường':
+      return 'difficulty-hard'
+    default:
+      return ''
   }
 }
 </script>
+<style>
+.difficulty-easy {
+  color: green;
+}
+.difficulty-medium {
+  color: orange;
+}
+.difficulty-hard {
+  color: red;
+}
+</style>

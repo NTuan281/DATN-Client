@@ -1,11 +1,16 @@
 import { defineStore } from "pinia";
 import axiosClient from "../api/clientAxiosApi";
+import Cookies from 'js-cookie'
+
+
+
 export const useProblemStore = defineStore("problem", {
   state: () => ({
   }),
 
   actions: {
-        async getAllProblem(token){
+        async getAllProblem(){
+          const token = Cookies.get('authToken')
           try {
              const response  = await axiosClient.get("problem",{
               headers: {

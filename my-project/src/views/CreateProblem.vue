@@ -227,9 +227,12 @@ const submitForm = async () => {
 
   console.log(problemData+'\n'+ user);
   try {
-  //  const response = await axiosClient.post('problem', problemData)
+    const response = await axiosClient.post('problem', problemData,{
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }})
     // Xử lý response nếu cần
-    console.log(problemData);
+    console.log(response);
   } catch (error) {
     console.error('Error submitting form:', error)
   }
