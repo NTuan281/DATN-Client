@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-slate-200">
+  <div class="bg-slate-200 h-screen">
     <div class="flex px-4 py-2 items-center justify-between">
       <div class="flex items-center">
         <!-- SVG and Problem List Header -->
@@ -29,17 +29,20 @@
         </button>
       </div>
     </div>
-    <div class="grid grid-cols-10 w-full h-screen">
-      <div id="problemContent" class="col-span-5 bg-slate-100 m-4 p-4 rounded-md">
+    <div class="grid grid-cols-10 w-full ">
+      <div id="problemContent" class="col-span-5 bg-slate-100 m-4 mr-0 p-4 rounded-md">
         <!-- Problem Content -->
-        <div v-if="selectedProblem">
-          <h1 class="font-semibold text-3xl pb-4">
+        <div v-if="selectedProblem" class="p-3">
+          <h1 class="font-semibold text-3xl mb-4">
             {{ selectedProblem.id + '. ' + selectedProblem.name }}
           </h1>
           <p :class="difficultyClass(selectedProblem.difficulty)">
             {{ selectedProblem.difficulty }}
           </p>
-          <p class="text-lg pt-4">{{ selectedProblem.description }}</p>
+          <div>
+            <h1 class="font-semibold text-2xl mt-6 mb-4">Mô tả yêu cầu</h1>
+          <p class="text-lg mt-4">{{ selectedProblem.description }}</p>
+        </div>
         </div>
         <div v-else>
           <p>Select a problem to view its details.</p>
@@ -78,44 +81,48 @@
             </button>
           </div>
         </div>
-        <div class="bg-slate-100 m-4 p-4 rounded-md">
-          <div>
-            <CheckIcon class="h-6 w-6 text-green-500 border-2 border-green-500" />
-            <span class="font-semibold">Test case</span>
-          </div>
-          <div class="flex">
-            <button
-              class="px-4 py-2 bg-slate-200 rounded-md text-sm font-semibold active:bg-slate-500 duration-300"
-            >
-              Case 1
-            </button>
-            <button
-              class="px-4 py-2 bg-slate-200 rounded-md text-sm font-semibold ml-2 active:bg-slate-500 duration-300"
-            >
-              Case 2
-            </button>
-            <button
-              class="px-4 py-2 bg-slate-200 rounded-md text-sm font-semibold ml-2 active:bg-slate-500 duration-300"
-            >
-              Case 3
-            </button>
-            <button class="px-4 py-2 ml-2 hover:bg-slate-200 duration-300 rounded-md">
-              <PlusSmallIcon class="h-6 w-6 text-gray-500" />
-            </button>
-          </div>
-          <div class="mt-5">
-            <div class="font-semibold">Result</div>
-            <textarea
-              id="result"
-              class="w-full border outline-none rounded-md px-2 mt-3"
-              rows="5"
-              v-model="result"
-            ></textarea>
-          </div>
-          <div class="mt-5 flex">
-            <CodeBracketIcon class="w-6 h-5 text-gray-600" />
-            <span class="text-sm font-thin">Source</span>
-          </div>
+        <div class="bg-slate-100 m-4 p-4 rounded-md" id="resultWiew" >
+          <TabPanel :tabs="['Test case', 'Result']">
+            <template v-slot:tab-0>
+              <div class=" rounded-md">
+                <div class="flex">
+                  <button
+                    class="px-4 py-2 bg-slate-200 rounded-md text-sm font-semibold active:bg-slate-500 duration-300"
+                  >
+                    Case 1
+                  </button>
+                  <button
+                    class="px-4 py-2 bg-slate-200 rounded-md text-sm font-semibold ml-2 active:bg-slate-500 duration-300"
+                  >
+                    Case 2
+                  </button>
+                  <button
+                    class="px-4 py-2 bg-slate-200 rounded-md text-sm font-semibold ml-2 active:bg-slate-500 duration-300"
+                  >
+                    Case 3
+                  </button>
+                  <button class="px-4 py-2 ml-2 hover:bg-slate-200 duration-300 rounded-md">
+                    <PlusSmallIcon class="h-6 w-6 text-gray-500" />
+                  </button>
+                </div>
+                <div class="flex mt-5 h-16">
+
+                </div>
+                <div class="mt-5 flex">
+                  <CodeBracketIcon class="w-6 h-5 text-gray-600" />
+                  <span class="text-sm font-thin">Source</span>
+                </div>
+              </div>
+            </template>
+            <template v-slot:tab-1>
+              <textarea
+                id="resultTab"
+                class="w-full h-full rounded-md"
+                rows="5"
+                v-model="resultTab"
+              ></textarea>
+            </template>
+          </TabPanel>
         </div>
       </div>
     </div>
@@ -149,8 +156,10 @@ import axiosClient from '../api/clientAxiosApi'
 import Cookies from 'js-cookie'
 import { useProblemStore } from '../stores/problemStore'
 import ProblemList from '../components/ProblemList.vue'
+import TabPanel from '../components/TabPanelResult.vue'
 
 const problems = ref([])
+const resultTab = ref('')
 
 const selectedProblem = ref(null)
 const code = ref('public class Solutions{\n\t*\n}')
@@ -282,4 +291,11 @@ const difficultyClass = (difficulty) => {
 .difficulty-hard {
   color: red;
 }
+/* #resultView {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+
+} */
 </style>
