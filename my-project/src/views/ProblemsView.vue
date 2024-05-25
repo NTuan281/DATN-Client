@@ -29,7 +29,7 @@
         </button>
       </div>
     </div>
-    <div class="grid grid-cols-10 w-full ">
+    <div class="grid grid-cols-10 w-full">
       <div id="problemContent" class="col-span-5 bg-slate-100 m-4 mr-0 p-4 rounded-md">
         <!-- Problem Content -->
         <div v-if="selectedProblem" class="p-3">
@@ -41,8 +41,9 @@
           </p>
           <div>
             <h1 class="font-semibold text-2xl mt-6 mb-4">Mô tả yêu cầu</h1>
-          <p class="text-lg mt-4">{{ selectedProblem.description }}</p>
-        </div>
+            <p class="text-lg mt-4">{{ selectedProblem.description }}</p>
+          </div>
+
         </div>
         <div v-else>
           <p>Select a problem to view its details.</p>
@@ -81,11 +82,11 @@
             </button>
           </div>
         </div>
-        <div class="bg-slate-100 m-4 p-4 rounded-md" id="resultWiew" >
+        <div class="bg-slate-100 m-4 p-4 rounded-md" id="resultWiew">
           <TabPanel :tabs="['Test case', 'Result']">
             <template v-slot:tab-0>
-              <div class=" rounded-md">
-                <div class="flex">
+              <div class="rounded-md ">
+                <div class="flex ">
                   <button
                     class="px-4 py-2 bg-slate-200 rounded-md text-sm font-semibold active:bg-slate-500 duration-300"
                   >
@@ -105,9 +106,7 @@
                     <PlusSmallIcon class="h-6 w-6 text-gray-500" />
                   </button>
                 </div>
-                <div class="flex mt-5 h-16">
-
-                </div>
+                <div class="flex mt-5 h-16"></div>
                 <div class="mt-5 flex">
                   <CodeBracketIcon class="w-6 h-5 text-gray-600" />
                   <span class="text-sm font-thin">Source</span>
@@ -117,9 +116,10 @@
             <template v-slot:tab-1>
               <textarea
                 id="resultTab"
-                class="w-full h-full rounded-md"
+                class="w-full h-40 rounded-md"
                 rows="5"
                 v-model="resultTab"
+                placeholder="You must run your code first"
               ></textarea>
             </template>
           </TabPanel>
@@ -157,9 +157,11 @@ import Cookies from 'js-cookie'
 import { useProblemStore } from '../stores/problemStore'
 import ProblemList from '../components/ProblemList.vue'
 import TabPanel from '../components/TabPanelResult.vue'
+import { useRouter } from 'vue-router';
 
 const problems = ref([])
 const resultTab = ref('')
+const router =useRouter()
 
 const selectedProblem = ref(null)
 const code = ref('public class Solutions{\n\t*\n}')
@@ -200,6 +202,7 @@ const handleEnter = (event) => {
     code.value = event.target.value
   }
 }
+
 
 const runCode = async () => {
   const data = {
@@ -251,7 +254,8 @@ const saveSubmission = () => {
 }
 
 const backToHome = () => {
-  // Logic for navigating back to home
+  Cookies.remove('authToken');
+  router.push('/');
 }
 
 const selectProblem = (problem) => {

@@ -47,7 +47,7 @@
 .tab-button {
   padding: 10px;
   margin-right: 5px;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   border: none;
   background-color: rgb(241, 245, 249);
   cursor: pointer;
