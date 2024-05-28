@@ -33,7 +33,6 @@ const userStore = useUserStore();
 onMounted( async  () => {
   const token = Cookies.get('authToken')
   listUser.value = await  userStore.getAllUser(token)
-  console.log(listUser.value);
 });
 
 </script>

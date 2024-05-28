@@ -43,7 +43,6 @@
             <h1 class="font-semibold text-2xl mt-6 mb-4">Mô tả yêu cầu</h1>
             <p class="text-lg mt-4">{{ selectedProblem.description }}</p>
           </div>
-
         </div>
         <div v-else>
           <p>Select a problem to view its details.</p>
@@ -52,41 +51,73 @@
       <div class="col-span-5">
         <!-- Code Editor and Test Case Section -->
         <div class="bg-slate-100 m-4 p-4 rounded-md">
-          <div class="flex">
-            <CodeBracketIcon class="h-6 w-6 text-green-500" />
-            <span class="font-semibold ml-2">Code</span>
-          </div>
-          <textarea
-            name="code"
-            cols="30"
-            rows="20"
-            class="w-full outline-none border-t rounded-md p-2 text-slate-900 text-lg"
-            v-model="code"
-            @keydown.tab.prevent="handleTab"
-            @keydown.enter.prevent="handleEnter"
-          ></textarea>
-          <div class="flex justify-end">
-            <button
-              class="flex hover:bg-slate-300 duration-300 px-2 py-1 rounded-md mx-2"
-              @click="runCode"
-            >
-              <PlayIcon class="w-6 h-6 text-gray-500 mr-2" />
-              <span class="font-semibold">Run</span>
-            </button>
-            <button
-              class="flex hover:bg-slate-300 duration-300 px-2 py-1 rounded-md mx-2"
-              @click="saveSubmission"
-            >
-              <CloudArrowUpIcon class="w-6 h-6 text-green-500 mr-2" />
-              <span class="font-semibold">Submit</span>
-            </button>
-          </div>
+    <div class="flex justify-between">
+      <div class="flex items-center">
+        <CodeBracketIcon class="h-6 w-6 text-green-500" />
+        <span class="font-semibold ml-2">Code</span>
+      </div>
+      <div class="flex items-center">
+        <button
+          v-if="!timerStarted"
+          @click="startTimer"
+          class="flex items-center hover:bg-slate-300 duration-300 px-2 py-1 rounded-md"
+        >
+          <ClockIcon class="w-6 h-6 text-gray-500 mr-2" />
+        </button>
+        <div v-else class="flex items-center">
+          <button
+            @click="closeTimer"
+            class="flex items-center hover:bg-slate-300 duration-300 px-2 py-1 rounded-md "
+          >
+            <ChevronLeftIcon class="w-6 h-6 text-gray-500 " />
+          </button>
+          <button
+            @click="toggleTimer"
+            class="flex items-center hover:bg-slate-300 duration-300 px-2 py-1 rounded-md "
+          >
+            <span class="font-semibold mr-2">{{ formattedTime }}</span>
+            <component :is="timerRunning ? PauseCircleIcon : PlayCircleIcon" class="w-6 h-6 text-gray-500" />
+          </button>
+          <button
+            @click="resetTimer"
+            class="flex items-center hover:bg-slate-300 duration-300 px-2 py-1 rounded-md "
+          >
+            <ArrowPathIcon class="w-6 h-6 text-gray-500 " />
+          </button>
         </div>
+      </div>
+    </div>
+    <textarea
+      name="code"
+      cols="30"
+      rows="20"
+      class="w-full outline-none border-t rounded-md p-2 text-slate-900 text-lg"
+      v-model="code"
+      @keydown.tab.prevent="handleTab"
+      @keydown.enter.prevent="handleEnter"
+    ></textarea>
+    <div class="flex justify-end">
+      <button
+        class="flex hover:bg-slate-300 duration-300 px-2 py-1 rounded-md mx-2"
+        @click="runCode"
+      >
+        <PlayIcon class="w-6 h-6 text-gray-500 mr-2" />
+        <span class="font-semibold">Run</span>
+      </button>
+      <button
+        class="flex hover:bg-slate-300 duration-300 px-2 py-1 rounded-md mx-2"
+        @click="saveSubmission"
+      >
+        <CloudArrowUpIcon class="w-6 h-6 text-green-500 mr-2" />
+        <span class="font-semibold">Submit</span>
+      </button>
+    </div>
+  </div>
         <div class="bg-slate-100 m-4 p-4 rounded-md" id="resultWiew">
           <TabPanel :tabs="['Test case', 'Result']">
             <template v-slot:tab-0>
-              <div class="rounded-md ">
-                <div class="flex ">
+              <div class="rounded-md">
+                <div class="flex">
                   <button
                     class="px-4 py-2 bg-slate-200 rounded-md text-sm font-semibold active:bg-slate-500 duration-300"
                   >
@@ -106,7 +137,9 @@
                     <PlusSmallIcon class="h-6 w-6 text-gray-500" />
                   </button>
                 </div>
-                <div class="flex mt-5 h-16"></div>
+                <div class="flex mt-5 h-16">
+                  <span></span>
+                </div>
                 <div class="mt-5 flex">
                   <CodeBracketIcon class="w-6 h-5 text-gray-600" />
                   <span class="text-sm font-thin">Source</span>
@@ -115,7 +148,7 @@
             </template>
             <template v-slot:tab-1>
               <textarea
-                id="resultTab"
+                id="result"
                 class="w-full h-40 rounded-md"
                 rows="5"
                 v-model="resultTab"
@@ -143,32 +176,48 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
 import {
   PlayIcon,
   CloudArrowUpIcon,
   ArrowUturnLeftIcon,
   CodeBracketIcon,
-  CheckIcon,
-  PlusSmallIcon
+  PlusSmallIcon,
+  ClockIcon,
+  PauseCircleIcon, 
+  PlayCircleIcon,
+  ArrowPathIcon,
+  ChevronLeftIcon
 } from '@heroicons/vue/24/outline'
 import axiosClient from '../api/clientAxiosApi'
 import Cookies from 'js-cookie'
 import { useProblemStore } from '../stores/problemStore'
 import ProblemList from '../components/ProblemList.vue'
 import TabPanel from '../components/TabPanelResult.vue'
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
+import { nextTick } from 'vue'
 
 const problems = ref([])
-const resultTab = ref('')
-const router =useRouter()
+const router = useRouter()
 
 const selectedProblem = ref(null)
 const code = ref('public class Solutions{\n\t*\n}')
-const result = ref('')
+const resultTab = ref('')
 const showProblemList = ref(false)
 
 const problemStore = useProblemStore()
+
+const timeElapsed = ref(0);
+const timerStarted = ref(false);
+const timerRunning = ref(false);
+let intervalId = null;
+
+// Computed property to format the time
+const formattedTime = computed(() => {
+  const minutes = Math.floor(timeElapsed.value / 60);
+  const seconds = timeElapsed.value % 60;
+  return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+});
 
 const fetchProblemOptions = async () => {
   problems.value = await problemStore.getAllProblem()
@@ -203,12 +252,11 @@ const handleEnter = (event) => {
   }
 }
 
-
 const runCode = async () => {
   const data = {
     code: code.value.trim(),
     parameters: [],
-    output: 'Hello world',
+    output: 'Hello, World!',
     functionName: 'hello'
   }
   const token = Cookies.get('authToken')
@@ -222,10 +270,17 @@ const runCode = async () => {
     })
     const responseString = run.data.responseString
     const responseResult = run.data.responseResult
-    const resultTab = document.getElementById('result')
 
-    resultTab.style.color = responseResult ? 'green' : 'red'
-    result.value = responseString
+    await nextTick()
+
+    const result = document.getElementById('result')
+
+    if (result) {
+      result.style.color = responseResult ? 'green' : 'red'
+      resultTab.value = responseString
+    } else {
+      console.error("Element with id 'result' not found.")
+    }
   } catch (error) {
     console.error(error)
   }
@@ -254,19 +309,69 @@ const saveSubmission = () => {
 }
 
 const backToHome = () => {
-  Cookies.remove('authToken');
-  router.push('/');
+  Cookies.remove('authToken')
+  router.push('/')
 }
 
 const selectProblem = (problem) => {
   selectedProblem.value = problem
-  code.value = code.value.replace('*', 'public static ' + problem.guide + '{\n\t}')
+  code.value = code.value.replace('*', 'public static ' + problem.returnType + " "+ problem.functionName + '{\n\t}')
   showProblemList.value = false
+  console.log(problem);
 }
 
+const startTimer = () => {
+  timerStarted.value = true;
+  timerRunning.value = true;
+  intervalId = setInterval(() => {
+    timeElapsed.value++;
+  }, 1000);
+};
+
+const resetTimer = () => {
+  stopTimer();
+  timeElapsed.value = 0;
+};
+
+const stopTimer = () => {
+  if (intervalId !== null) {
+    clearInterval(intervalId);
+    intervalId = null;
+  }
+};
+
+const closeTimer = () =>{
+  stopTimer();
+  timeElapsed.value = 0;
+  timerStarted.value = false;
+  timerRunning.value = false;
+};
+
+const toggleTimer = () => {
+  if (timerRunning.value) {
+    stopTimer();
+  } else {
+    intervalId = setInterval(() => {
+      timeElapsed.value++;
+    }, 1000);
+  }
+  timerRunning.value = !timerRunning.value;
+};
+
+// Lifecycle hooks
 onMounted(() => {
-  fetchProblemOptions()
-})
+  fetchProblemOptions();
+  if (timerStarted.value && timerRunning.value) {
+    startTimer();
+  }
+});
+
+onBeforeUnmount(() => {
+  stopTimer();
+});
+
+
+
 
 const props = defineProps({
   selectedProblem: Object
