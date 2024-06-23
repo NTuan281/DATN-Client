@@ -2,6 +2,10 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import Dashboard from '../views/DashBoard.vue'
 import Cookies from 'js-cookie'
+import ProblemsView from '../views/ProblemsView.vue'
+import { useGeneralStore } from '../stores/generalStore'
+import ListSubmissonsByDate from '../components/ListSubmissonsByDate.vue'
+
 
 export function roleToken() {
   let role = '' // Sửa đổi: Khai báo biến role
@@ -60,7 +64,17 @@ const router = createRouter({
     {
       path: '/problems',
       name: 'problem',
-      component: () => import('../views/ProblemsView.vue')
+      component: ProblemsView,
+      beforeEnter: (to, from, next) => {
+        const token = Cookies.get('authToken')
+        const generalStore = useGeneralStore()
+        if (token) {
+          next()
+        } else {
+          generalStore.showLoginDialog = true
+          next(false) // Ngăn chặn điều hướng
+        }
+      }
     },
     {
       path: '/dashboard',
@@ -90,6 +104,21 @@ const router = createRouter({
       path: '/problem-management',
       name: 'ProblemManagement',
       component: () => import('../views/ProblemManagement.vue')
+    },
+    {
+      path: '/submits',
+      name: 'SubmitManagement',
+      component: ListSubmissonsByDate,
+      beforeEnter: (to, from, next) => {
+        const token = Cookies.get('authToken')
+        const generalStore = useGeneralStore()
+        if (token) {
+          next()
+        } else {
+          generalStore.showLoginDialog = true
+          next(false) // Ngăn chặn điều hướng
+        }
+      }
     }
   ]
 })

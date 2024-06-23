@@ -15,7 +15,7 @@
         class="p-2 cursor-pointer hover:bg-slate-300 rounded-md"
       >
         <div class="flex justify-between ">
-          <h1 class="font-semibold">{{ problem.name}}</h1>
+          <h1 class="font-semibold">{{ problem.name }}{{ problem.test ? " (Test)" : " " }}</h1>
           <h2 :class="difficultyClass(problem.difficulty)">{{ problem.difficulty }}</h2>
         </div>
       </li>
@@ -48,9 +48,9 @@ export default {
       switch (difficulty.toLowerCase()) {
         case 'dễ':
       return 'difficulty-easy';
-    case 'normal':
+    case 'thường':
       return 'difficulty-medium';
-    case 'bình thường':
+    case 'khó':
       return 'difficulty-hard';
     default:
       return '';

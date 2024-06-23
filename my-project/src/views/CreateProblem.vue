@@ -14,11 +14,21 @@
         <input v-model="guide" id="guide" class="mt-1 p-2 border w-full" />
         <label for="description" class="block text-sm font-medium text-gray-600">Mô tả</label>
         <textarea v-model="description" id="description" class="mt-1 p-2 border w-full"></textarea>
+        
         <label for="edit" class="block text-sm font-medium text-gray-600">Tên hàm:</label>
         <input v-model="functionName" id="guide" class="mt-1 p-2 border w-full" />
-        <label for="return_type" class="block text-sm font-medium text-gray-600">Loại trả về:</label>
+        <label for="return_type" class="block text-sm font-medium text-gray-600"
+          >Loại trả về:</label
+        >
         <input v-model="returnType" id="guide" class="mt-1 p-2 border w-full" />
-        <button type="submit" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">Tạo</button>
+        <label class="block text-sm font-medium text-gray-600 mt-2">
+          Bài kiểm tra:
+          <input type="checkbox" class="ml-4 mt-1 mb-2 p-2 border" v-model="isTest" />
+        </label>
+        <label for="timeLimit" class="block text-sm font-medium text-gray-600">Time Limit (minutes):</label>
+    <input type="number" id="timeLimit" v-model="timeLimit" class="mt-1 p-2 border w-full">
+    <input  for="message" class="block text-red-500" v-model="message">
+        <button type="submit" class="mt-8 bg-blue-500 text-white px-4 py-2 rounded">Tạo</button>
       </form>
     </div>
   </AdminLayout>
@@ -37,6 +47,9 @@ const problem = ref('')
 const difficulty = ref('')
 const functionName = ref('')
 const returnType = ref('')
+const isTest = ref(false)
+const timeLimit = ref(0)
+const message = ref('')
 
 onMounted(() => {})
 
@@ -52,12 +65,11 @@ const submitForm = async () => {
     guide: guide.value,
     description: description.value,
     functionName: functionName.value,
+    test: isTest.value,
     returnType: returnType.value,
-    user: user
+    user: user,
+    timeLimit: timeLimit.value
   }
-
-
-
   console.log(problemData)
   try {
     const response = await axiosClient.post('problem', problemData, {
@@ -65,7 +77,9 @@ const submitForm = async () => {
         Authorization: `Bearer ${token}`
       }
     })
+    message.value = "Thêm thành công"
   } catch (error) {
+    message.value = "Xảy ra lỗi"
     console.error('Error submitting form:', error)
   }
 }

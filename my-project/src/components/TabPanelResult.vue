@@ -16,26 +16,37 @@
   </div>
 </template>
 
-  
-  <script setup>
-  import { ref } from 'vue';
-  
-  const props = defineProps({
-    tabs: {
-      type: Array,
-      required: true
-    }
-  });
-  
-  const selectedTab = ref(0);
-  
-  const selectTab = (index) => {
-    selectedTab.value = index;
-  };
-  </script>
-  
-  <style scoped>
-  .tab-panel {
+<script setup>
+import { ref, watch } from 'vue';
+
+const props = defineProps({
+  tabs: {
+    type: Array,
+    required: true
+  },
+  modelValue: {
+    type: Number,
+    default: 0
+  }
+});
+
+const emit = defineEmits(['update:modelValue']);
+
+const selectedTab = ref(props.modelValue);
+
+const selectTab = (index) => {
+  selectedTab.value = index;
+  emit('update:modelValue', index);
+};
+
+// Đồng bộ hóa selectedTab với modelValue từ cha
+watch(() => props.modelValue, (newVal) => {
+  selectedTab.value = newVal;
+});
+</script>
+
+<style scoped>
+.tab-panel {
   font-family: Arial, sans-serif;
   height: auto;
 }
@@ -76,6 +87,4 @@
   border-top: none;
   border-radius: 8px;
 }
-
-  </style>
-  
+</style>
