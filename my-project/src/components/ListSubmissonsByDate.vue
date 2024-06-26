@@ -7,17 +7,6 @@
         <h2 class="p-4 text-xl text-slate-900 font-semibold">All Submissions</h2>
         <div class="flex p-4">
           <div class="form-group mr-3">
-            <label for="submissionTime" class="mr-2">Submission Date:</label>
-            <select
-              v-model="selectedSubmissionTime"
-              id="submissionTime"
-              class="form-control hover:bg-slate-300 duration-300 px-2 py-1 rounded-md mx-2"
-            >
-              <option value="">Select Submission Date</option>
-              <option v-for="date in submissionDates" :key="date" :value="date">{{ date }}</option>
-            </select>
-          </div>
-          <div class="form-group mr-3">
             <label for="problemId" class="mr-2">Problem:</label>
             <select
               v-model="selectedProblemId"
@@ -111,17 +100,6 @@
       <div>
         <h2 class="p-4 text-xl text-slate-900 font-semibold">All Submissions</h2>
         <div class="flex p-4">
-          <div class="form-group mr-3">
-            <label for="submissionTime" class="mr-2">Submission Date:</label>
-            <select
-              v-model="selectedSubmissionTime"
-              id="submissionTime"
-              class="form-control hover:bg-slate-300 duration-300 px-2 py-1 rounded-md mx-2"
-            >
-              <option value="">Select Submission Date</option>
-              <option v-for="date in submissionDates" :key="date" :value="date">{{ date }}</option>
-            </select>
-          </div>
           <div class="form-group mr-3">
             <label for="problemId" class="mr-2">Problem:</label>
             <select
@@ -221,7 +199,6 @@ import AdminLayout from '../layouts/AdminLayout.vue'
 const problems = ref([])
 const problemsIsTest = ref([])
 
-const submissionDates = ref([])
 const allSubmissions = ref([])
 const submissionResult = ref([])
 const testSubmissionsResult = ref([])
@@ -262,14 +239,10 @@ function decodeTokenAndGetUserRole() {
 const fetchSubmissions = async () => {
   const token = Cookies.get('authToken')
   try {
-    const submissionDate = selectedSubmissionTime.value
-      ? new Date(selectedSubmissionTime.value)
-      : null
     const params = {
-      submissionTime: submissionDate,
       problemId: selectedProblemId.value
     }
-    const response = await axiosClient.post('/submissions/getSubmissions', params, {
+    const response = await axiosClient.post('/submissions/leaderboard', params, {
       headers: {
         Authorization: `Bearer ${token}`
       }
