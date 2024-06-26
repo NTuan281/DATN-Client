@@ -3,6 +3,8 @@
     <div class="col-span-2">{{ problem.name }}</div>
     <div class="col-span-2">{{ problem.difficulty }}</div>
     <div class="col-span-2">{{ formatDate(problem.createAt) }}</div>
+    <div class="col-span-2">{{ problem.returnType }}</div>
+    <div class="col-span-2">{{ problem.functionName}}</div>
 
     <!-- Hiển thị nút testcase -->
     <div class="col-span-2">

@@ -4,60 +4,105 @@
       <AdminLayout>
         <!-- Nội dung AdminLayout -->
         <div>
-          <h2 class="p-4 text-xl text-slate-900 font-semibold">All Submissions</h2>
-          <div class="flex p-4">
-            <div class="form-group mr-3">
-              <label for="submissionTime" class="mr-2">Submission Date:</label>
-              <select
-                v-model="selectedSubmissionTime"
-                id="submissionTime"
-                class="form-control hover:bg-slate-300 duration-300 px-2 py-1 rounded-md mx-2"
-              >
-                <option value="">Select Submission Date</option>
-                <option v-for="date in submissionDates" :key="date" :value="date">
-                  {{ date }}
-                </option>
-              </select>
-            </div>
-            <div class="form-group mr-3">
-              <label for="problemId" class="mr-2">Problem:</label>
-              <select
-                v-model="selectedProblemId"
-                id="problemId"
-                class="form-control hover:bg-slate-300 duration-300 px-2 py-1 rounded-md mx-2"
-              >
-                <option value="">Select Problem ID</option>
-                <option v-for="id in problemIds" :key="id" :value="id">{{ id }}</option>
-              </select>
-            </div>
-            <button
-              @click="fetchSubmissions"
-              class="btn btn-primary bg-slate-200 hover duration-300 px-2 py-1 rounded-md mx-2"
+        <h2 class="p-4 text-xl text-slate-900 font-semibold">All Submissions</h2>
+        <div class="flex p-4">
+          <div class="form-group mr-3">
+            <label for="submissionTime" class="mr-2">Submission Date:</label>
+            <select
+              v-model="selectedSubmissionTime"
+              id="submissionTime"
+              class="form-control hover:bg-slate-300 duration-300 px-2 py-1 rounded-md mx-2"
             >
-              Fetch Submissions
+              <option value="">Select Submission Date</option>
+              <option v-for="date in submissionDates" :key="date" :value="date">{{ date }}</option>
+            </select>
+          </div>
+          <div class="form-group mr-3">
+            <label for="problemId" class="mr-2">Problem:</label>
+            <select
+              v-model="selectedProblemId"
+              id="problemId"
+              class="form-control hover:bg-slate-300 duration-300 px-2 py-1 rounded-md mx-2"
+            >
+              <option value="">Select Problem ID</option>
+              <option v-for="problem in problems" :key="problem.id" :value="problem.id">
+                {{ problem.name }}
+              </option>
+            </select>
+          </div>
+          <button
+            @click="fetchSubmissions"
+            class="btn btn-primary bg-slate-200 hover:bg-slate-300 duration-300 px-2 py-1 rounded-md mx-2"
+          >
+            Fetch Submissions
+          </button>
+        </div>
+
+        <div class="table-responsive m-4 mt-0">
+          <h2 class="p-4 pl-0 text-xl text-slate-900 font-semibold">Bài tập</h2>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th class="px-4">User Full Name</th>
+                <th class="px-4">Result</th>
+                <th class="px-4">Completed Time</th>
+                <th class="px-4">Source</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="submission in sortedSubmissions" :key="submission.id">
+                <td class="px-4">{{ submission.user.fullName }}</td>
+                <td class="px-4">{{ submission.result }}</td>
+                <td class="px-4">{{ submission.completedTime }}</td>
+                <td class="px-4">{{ submission.source }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <hr class="m-4" />
+        <div class="flex p-4">
+          <div class="form-group mr-3">
+            <label for="problemId" class="mr-2">Problem ID:</label>
+            <select
+              v-model="selectedTestProblemId"
+              id="problemId"
+              class="form-control hover:bg-slate-300 duration-300 px-2 py-1 rounded-md mx-2"
+            >
+              <option value="">Select Problem ID</option>
+              <option v-for="problem in problemsIsTest" :key="problem.id" :value="problem.id">
+                {{ problem.name }}
+              </option>
+            </select>
+            <button
+              @click="fetchTestSubmissions"
+              class="btn btn-primary bg-slate-200 hover:bg-slate-300 duration-300 px-2 py-1 rounded-md mx-2"
+            >
+              Fetch Test Submissions
             </button>
           </div>
-          <div class="table-responsive m-4">
-            <table class="table table-bordered table-striped">
-              <thead>
-                <tr>
-                  <th class="px-4">User Full Name</th>
-                  <th class="px-4">Result</th>
-                  <th class="px-4">Completed Time</th>
-                  <th class="px-4">Source</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="submission in sortedSubmissions" :key="submission.id">
-                  <td class="px-4">{{ submission.user.fullName }}</td>
-                  <td class="px-4">{{ submission.result }}</td>
-                  <td class="px-4">{{ submission.completedTime }}</td>
-                  <td class="px-4">{{ submission.source }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
         </div>
+        <div class="table-responsive m-4">
+          <h2 class="p-4 pl-0 text-xl text-slate-900 font-semibold">Bài kiểm tra</h2>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th class="px-4">User Full Name</th>
+                <th class="px-4">Result</th>
+                <th class="px-4">Completed Time</th>
+                <th class="px-4">Source</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="submission in testSubmissionsResult" :key="submission.id">
+                <td class="px-4">{{ submission.user.fullName }}</td>
+                <td class="px-4">{{ submission.result }}</td>
+                <td class="px-4">{{ submission.completedTime }}</td>
+                <td class="px-4">{{ submission.source }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
       </AdminLayout>
     </template>
 

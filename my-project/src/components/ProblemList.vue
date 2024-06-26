@@ -1,5 +1,5 @@
 <template>
-  <div class="problem-list bg-slate-200 p-4 rounded-md ">
+  <div class="problem-list bg-slate-200  rounded-md ">
     <div class="flex justify-between items-center mb-4 pb-2">
       <h2 class="font-semibold text-xl">Problem List</h2>
       <button @click="closeForm" class="px-4 py-2 text-black rounded-md bg-transparent">

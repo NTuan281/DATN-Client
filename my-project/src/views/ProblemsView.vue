@@ -29,8 +29,8 @@
         </button>
       </div>
     </div>
-    <div class="grid grid-cols-10 w-full">
-      <div id="problemContent" class="col-span-5 bg-slate-100 m-4 mr-0 p-4 rounded-md">
+    <div class="grid grid-cols-10 w-full h-[90vh]">
+      <div id="problemContent" class="col-span-5 bg-slate-100 mx-4 mr-0 p-4 h-full rounded-md">
         <!-- Problem Content -->
         <div v-if="selectedProblem && testcaseValue" class="p-3">
           <h1 class="font-semibold text-3xl mb-4">
@@ -62,9 +62,9 @@
           <p>Select a problem to view its details.</p>
         </div>
       </div>
-      <div class="col-span-5">
+      <div class="col-span-5 h-full flex flex-col">
         <!-- Code Editor and Test Case Section -->
-        <div class="bg-slate-100 m-4 p-4 rounded-md">
+        <div class="bg-slate-100 mx-4 p-4 rounded-md mb-6">
           <div class="flex justify-between">
             <div class="flex items-center">
               <CodeBracketIcon class="h-6 w-6 text-green-500" />
@@ -104,9 +104,16 @@
               @keydown.enter.prevent="handleEnter"
             >
             </textarea> -->
-            <MonacoEditor v-model="code" />
+            <MonacoEditor
+              cols="30"
+              rows="20"
+              v-model="code"
+              class="w-full outline-none rounded-md m-2 pr-4 text-slate-900 text-lg"
+              :readOnly="!isEditable"
+              
+            />
+            <!-- ý là m đưa t tk mk để t test ntuan - *AnhTuan281 -->
           </div>
-
           <div class="flex w-full justify-between items-center">
             <div class="flex items-center">
               <button
@@ -137,11 +144,11 @@
             </div>
           </div>
         </div>
-        <div class="bg-slate-100 m-4 p-4 rounded-md" id="resultWiew">
+        <div class="bg-slate-100 mx-4 p-4 rounded-md" id="resultWiew">
           <TabPanel :tabs="['Test case', 'Result']" v-model="currentTab">
             <template v-slot:tab-0>
               <div class="rounded-md">
-                <div class="flex flex-col h-28">
+                <div class="flex flex-col h-40">
                   <div class="mt-3" v-for="(param, index) in listParameters" :key="index">
                     <div class="text-gray-400">{{ param }}=</div>
                     <span class="bg-slate-100 inline-block w-full">{{
@@ -158,7 +165,7 @@
             <template v-slot:tab-1>
               <textarea
                 id="result"
-                class="w-full h-36 rounded-md font-semibold text-lg p-2"
+                class="w-full h-48 rounded-md font-semibold text-lg p-2"
                 rows="5"
                 v-model="resultTab"
                 placeholder="You must run your code first"
@@ -253,15 +260,15 @@ import { useTestcaseStore } from '../stores/testcaseStore'
 import LoginDialog from '../components/LoginDialog.vue'
 import { useGeneralStore } from '../stores/generalStore'
 import { useUserStore } from '../stores/userStore'
-import MonacoEditor from '../components/monacoCode.vue';
+import MonacoEditor from '../components/monacoCode.vue'
 const generalStore = useGeneralStore()
-const code = ref('// Viết mã Java của bạn ở đây');
+const code = ref('// Viết mã Java của bạn ở đây')
 const userStore = useUserStore()
 const problems = ref([])
 const testcase = ref(null)
 const router = useRouter()
 let functionClass = '\n\t*\n'
-const listParameters = ref([]) 
+const listParameters = ref([])
 const listValueParameters = ref([])
 const submissionResult = ref()
 
@@ -587,6 +594,7 @@ const startTimer = () => {
     }
   }, 1000)
 }
+// để t xem cái
 
 const reset = () => {
   if (intervalId) {
@@ -634,7 +642,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   stopTimer()
 })
-
+console.log(isEditable.value);
 const props = defineProps({
   selectedProblem: Object,
   testcase: Object

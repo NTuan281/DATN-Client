@@ -38,7 +38,7 @@
               @click="generalStore.isCreatedAminOpen = true"
               class="cursor-pointer px-4 py-2 pl-10 text-sm hover:text-gray-800 hover:bg-gray-200 duration-300 text-gray-200 rounded"
             >
-              Create Admin
+              Create User
             </DisclosurePanel>
           </TransitionRoot>
         </Disclosure>
