@@ -1,6 +1,6 @@
 <template>
   <AdminLayout>
-    <div>wellcome</div>
+    <img src="../assets/img/Untitled-2.jpg" alt="">
   </AdminLayout>
 </template>
 <script setup>

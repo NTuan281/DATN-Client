@@ -110,7 +110,6 @@
               v-model="code"
               class="w-full outline-none rounded-md m-2 pr-4 text-slate-900 text-lg"
               :readOnly="!isEditable"
-              
             />
             <!-- ý là m đưa t tk mk để t test ntuan - *AnhTuan281 -->
           </div>
@@ -290,26 +289,33 @@ let intervalId = null
 const isEditable = ref(false)
 
 const isMessengerSubmissionVisible = ref(false)
-const MessengerSubmission = ref('Nộp bài thành công')
+const MessengerSubmission = ref('')
 
 function hideMessengerSubmissionModal() {
-  if (selectedProblem.value.test) {
-    Cookies.remove('authToken')
-    router.push('/')
+  if (selectedProblem.value === null) isMessengerSubmissionVisible.value = false
+  if (!selectedProblem.value.test) {
+    isMessengerSubmissionVisible.value = false
+    selectedProblem.value = null
+    code.value = '// Viết mã Java của bạn ở đây'
+    resultTab.value = ''
+    reset()
   }
-  isMessengerSubmissionVisible.value = false
-  selectedProblem.value = null
-  functionClass = '\n\t*\n'
-  code.value = 'public class Solutions{' + functionClass + '}'
-  resultTab.value = ''
-  reset()
+  if (selectedProblem.value.test) {
+    if (MessengerSubmission.value === 'Đã hết giờ làm bài vui lòng nhấn nút submit và nộp bài') {
+      isMessengerSubmissionVisible.value = false
+    } else {
+      isMessengerSubmissionVisible.value = false
+      selectedProblem.value = null
+      code.value = '// Viết mã Java của bạn ở đây'
+      resultTab.value = ''
+      reset()
+    }
+  }
 }
-
 function showMessengerSubmissionModal() {
   isMessengerSubmissionVisible.value = true
 }
 
-// Computed property to format the time
 const formattedTime = computed(() => {
   const minutes = Math.floor(timeElapsed.value / 60)
   const seconds = timeElapsed.value % 60
@@ -325,8 +331,6 @@ function decodeTokenAndGetUserId(token) {
     if (token) {
       const [, payloadBase64] = token.split('.')
       const decodedPayload = JSON.parse(atob(payloadBase64))
-
-      // Đảm bảo rằng 'role' là một trường có trong payload trước khi truy cập
       if (decodedPayload && decodedPayload.role) {
         return decodedPayload.id
       } else {
@@ -345,35 +349,6 @@ function decodeTokenAndGetUserId(token) {
 
 const fetchTestcaseOptions = async (problemId) => {
   testcase.value = await testcaseStore.getTestcaseByProblemId(problemId)
-}
-
-const handleTab = (event) => {
-  const currentPosition = event.target.selectionStart
-  event.target.value = `${event.target.value.substring(
-    0,
-    currentPosition
-  )}\t${event.target.value.substring(currentPosition)}`
-  event.target.selectionStart = event.target.selectionEnd = currentPosition + 1
-  code.value = event.target.value
-}
-
-const handleEnter = (event) => {
-  if (event.key === 'Enter') {
-    event.preventDefault()
-    const currentPosition = event.target.selectionStart
-    const lineStart = event.target.value.lastIndexOf('\n', currentPosition - 1)
-    const currentLine = event.target.value.substring(lineStart + 1, currentPosition)
-    const shouldIndent = /\{\s*$/.test(currentLine)
-    const indentMatch = currentLine.match(/^\s*/)
-    const indent = indentMatch ? indentMatch[0] : ''
-    const newText = `${event.target.value.substring(0, currentPosition)}\n${
-      shouldIndent ? '\t' : ''
-    }${indent}${event.target.value.substring(currentPosition)}`
-    event.target.value = newText
-    event.target.selectionStart = event.target.selectionEnd =
-      currentPosition + 1 + (shouldIndent ? 1 : 0) + indent.length
-    code.value = event.target.value
-  }
 }
 
 const runCode = async () => {
@@ -406,7 +381,6 @@ const runCode = async () => {
     await nextTick()
 
     const result = document.getElementById('result')
-
     if (result) {
       result.style.color = submissionResult.value ? 'green' : 'red'
       resultTab.value = responseString
@@ -439,8 +413,11 @@ const nextProblem = () => {
 const checkTimeLimit = () => {
   const timeLimitInSeconds = selectedProblem.value.timeLimit * 60
   if (timeElapsed.value >= timeLimitInSeconds) {
-    saveSubmission()
-    router.push('/')
+    MessengerSubmission.value = 'Đã hết giờ làm bài vui lòng nhấn nút submit và nộp bài'
+    stopTimer()
+    showMessengerSubmissionModal()
+    runCode()
+    isEditable.value = false
   }
 }
 
@@ -484,12 +461,13 @@ const checkTestSubmissionByUserIsExist = async (submissionData) => {
 
 const saveSubmission = async () => {
   stopTimer()
-  let result = checkSubmissonResult(resultTab.value)
   await runCode()
+  let result = checkSubmissonResult(resultTab.value)
   let user
   const token = Cookies.get('authToken')
   const id = decodeTokenAndGetUserId(token)
   user = await userStore.getUserById(id, token)
+  console.log(resultTab.value, result)
 
   const submissionData = {
     source: code.value.trim(),
@@ -504,11 +482,12 @@ const saveSubmission = async () => {
     const exists = await checkTestSubmissionByUserIsExist(submissionData)
 
     if (exists) {
-      MessengerSubmission.value =
-        'Duplicate test submission for the same problem by the same user is not allowed'
-      await sleep(1000)
+      MessengerSubmission.value = 'Người dùng chỉ được nộp bài kiểm tra một lần'
       showMessengerSubmissionModal()
-      console.log(MessengerSubmission.value)
+      selectedProblem.value = null
+      code.value = '// Viết mã Java của bạn ở đây'
+      resultTab.value = ''
+      reset()
       return
     }
     const submit = await axiosClient.post('submissions', submissionData, {
@@ -519,7 +498,7 @@ const saveSubmission = async () => {
       }
     })
 
-    console.log(submit.data)
+    MessengerSubmission.value = "Nộp bài thành công"
     showMessengerSubmissionModal()
   } catch (error) {
     console.error('Error saving submission:', error)
@@ -642,7 +621,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   stopTimer()
 })
-console.log(isEditable.value);
+console.log(isEditable.value)
 const props = defineProps({
   selectedProblem: Object,
   testcase: Object

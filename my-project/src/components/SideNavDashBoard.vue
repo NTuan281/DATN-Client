@@ -1,6 +1,6 @@
 <template>
   <aside class="flex flex-col bg-gray-800 h-screen overflow-auto text-white">
-    <div class="px-4 text-4xl font-bold py-4">Learn Java Together</div>
+    <div class="px-4 text-4xl font-bold py-4">Learn Java</div>
     <div class="px-4 text-2xl font-semibold py-2">
       <RouterLink to="/dashboard"> Dashboard </RouterLink>
     </div>
@@ -85,6 +85,12 @@
           </RouterLink>
         </div>
       </div>
+      <div class="">
+        <button class="flex hover:bg-slate-300  rounded-md px-4 py-2" @click="backToHome">
+          <ArrowUturnLeftIcon class="w-6 h-6 text-gray-500" />
+          <span class="font-semibold ml-2">Back to home</span>
+        </button>
+      </div>
     </div>
   </aside>
 </template>
@@ -95,9 +101,16 @@ import {
   CubeIcon,
   UserCircleIcon,
   BookOpenIcon,
-  ClipboardDocumentCheckIcon
+  ClipboardDocumentCheckIcon, 
+  ArrowUturnLeftIcon
 } from '@heroicons/vue/24/solid'
 import { RouterLink } from 'vue-router'
 import { useGeneralStore } from '../stores/generalStore'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 const generalStore = useGeneralStore()
+const backToHome = () => {
+  router.push('/')
+}
 </script>
