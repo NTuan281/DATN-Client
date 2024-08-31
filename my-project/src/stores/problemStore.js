@@ -31,6 +31,7 @@ export const useProblemStore = defineStore("problem", {
             output: output,  
             functionName: functionName
           }
+          // eslint-disable-next-line no-useless-catch
           try {
             // Gọi API đăng ký
             const response = await axiosClient.post("executes", data, {
